@@ -1,0 +1,28 @@
+[Unit]
+Description=Bewerbungs-API (Go)
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/bewerbungs-api
+
+# Konfiguration der Anwendung
+Environment=ADDR=127.0.0.1:8080
+Environment=DATA_DIR=/var/lib/bewerbungs-api
+
+# Eigener, temporärer Systembenutzer ohne Login - kein useradd nötig.
+DynamicUser=yes
+# Legt /var/lib/bewerbungs-api an und gibt es dem Dienst-Benutzer.
+StateDirectory=bewerbungs-api
+
+# Bei Absturz automatisch neu starten
+Restart=on-failure
+RestartSec=2
+
+# Zusätzliche Härtung
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
