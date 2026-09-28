@@ -38,26 +38,27 @@ Die Dateien unter `data/*.json` enthalten lokale Bewerbungsdaten und werden desh
 nicht veröffentlicht. Vor einem öffentlichen Push immer prüfen, dass keine echten
 Daten, Tokens oder Zugangsdaten im Commit oder in der Git-Historie enthalten sind.
 
-Job Application Tracker – API
+# Job Application Tracker – API
 
 Backend for a small web app that helps job seekers track their applications: company address, application channel and date, salary expectation, rejection date, and free-text notes.
 
 Written in Go, using only the standard library plus JWT/JWKS verification. Deployed as a native systemd service on an Oracle Cloud instance (no containers).
 
-Features
+## Features
 REST API: GET / POST / PATCH / DELETE on /api/applications
 Per-user data isolation — each authenticated user's applications are stored in their own JSON file, keyed by their Zitadel sub claim
 Authentication via Zitadel (OIDC), JWT verified against Zitadel's JWKS endpoint
 Authorization via Zitadel project roles
 Atomic writes (write-to-temp-file + rename) so a crash mid-write can't corrupt stored data
 CORS handling for the Angular frontend
-Stack
+## Stack
 Go (standard library net/http, no framework)
 golang-jwt/jwt + MicahParks/keyfunc for JWT/JWKS verification
 Data storage: flat JSON files (one per user) — no database, deliberately kept simple for the scope of this project
 Deployment: systemd unit on Oracle Linux 9, Caddy as reverse proxy for automatic HTTPS
-Running locally
-bash
+
+## Running locally
+```bash
 go build -o app .
 ADDR=127.0.0.1:8080 \
 DATA_DIR=./data \
@@ -65,13 +66,15 @@ ZITADEL_ISSUER=https://your-instance.zitadel.cloud \
 ZITADEL_AUDIENCE=<your-project-resource-id> \
 ZITADEL_REQUIRED_ROLE=<role-name> \
 ./app
-Configuration
+```
+## Configuration
 Env var	Description
 ADDR	Listen address (default 127.0.0.1:8080)
 DATA_DIR	Directory for per-user JSON files (default ./data)
 ZITADEL_ISSUER	Zitadel instance URL
 ZITADEL_AUDIENCE	Zitadel project resource ID / client ID
 ZITADEL_REQUIRED_ROLE	Project role required to access the API (optional — omit to only require a valid token)
-Notes on this project
+
+## Notes on this project
 
 Built with Claude Code as a pair-programming partner — the code itself came together quickly and cleanly; the harder part was operational (systemd permissions, remembering to actually stop-and-replace the running binary on each deploy). See commit history for the incremental build-up (GET/POST → PATCH/DELETE → auth → per-user storage).
